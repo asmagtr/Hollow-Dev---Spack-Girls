@@ -5,6 +5,8 @@ const verifyFields=require("../middleware/fileMiddleware");
 const fileModel=require("../models/fileModel.js");
 const fs = require('fs');
 const path = require('path');
+
+const uploadToCloud=require('../cloudinary/cloudinaryUpload.js')
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, './uploads')
@@ -54,7 +56,15 @@ router.post('/upload', upload.single('file'), verifyFields,async function (req, 
         res.json({error:false,
             message:"file uploaded succesfully",
             result,
-        })
+        });
+        const file=result.file
+        console.log(`result is ${result}////////// file which is result.data is ${file}`)
+        const filepath = path.join(__dirname, '../uploads',file);
+        await uploadToCloud(filepath);
+        console.log("uplooaded")
+
+
+
         
     }catch(error){
         console.log(error);
@@ -194,10 +204,11 @@ router.put("/update-file/:id",async (req,res)=>{
             message:"no file found"
         });
     }
-    
     const fileName=response.file;
+
+
     const filePath="http://localhost:"+process.env.PORT+"/uploads/"+fileName;
-    console.log(filePath);
+
     return res.json({
         error:false,
         message:"file found",

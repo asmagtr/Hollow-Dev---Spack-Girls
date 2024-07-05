@@ -6,6 +6,7 @@ import axios from "axios";
 
 const App = () => {
   const [files,setFiles]=useState([]);
+  const [filesUpdated,setFilesUpdated]=useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -17,12 +18,14 @@ const App = () => {
     };
   
     fetchData(); 
-  }, files);
+  }, filesUpdated);
   return (
     <div>
       <div className='my-20'>
       <FileForm files={files}
       setFiles={setFiles}
+      filesUpdated={filesUpdated}
+      setFilesUpdated={setFilesUpdated}
       />
       </div>
 
@@ -35,7 +38,12 @@ const App = () => {
             description={file.description}
             onDelete={() => {
               setFiles(files.filter((f) => f._id !== file._id));
+              setFilesUpdated(filesUpdated+1)
             }}
+            files={files}
+            setFiles={setFiles}
+            filesUpdated={filesUpdated}
+            setFilesUpdated={setFilesUpdated}
         />
 ))}
        

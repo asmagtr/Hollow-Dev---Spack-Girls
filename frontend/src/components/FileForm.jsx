@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import axios from "axios";
 
-const FileForm= (files,setFiles) => {
+const FileForm= (files,setFiles,filesUpdated,setFilesUpdated) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
@@ -25,7 +25,8 @@ const FileForm= (files,setFiles) => {
         _id:result.data._id,
         title,
         description,
-       })
+       });
+       setFilesUpdated(filesUpdated+1);
        alert("added succesfully");
        console.log(result);
       };
