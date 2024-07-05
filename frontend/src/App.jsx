@@ -33,7 +33,6 @@ const App = () => {
             id={file._id}
             title={file.title}
             description={file.description}
-            size={125489}
             onDelete={() => {
               setFiles(files.filter((f) => f._id !== file._id));
             }}

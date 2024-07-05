@@ -10,7 +10,7 @@ const FileForm= (files,setFiles) => {
     const handleSubmit = async(e) => {
         e.preventDefault();
         // Handle form submission logic
-        console.log({ title, description, file });
+        console.log("the reqqqqqqqq"+{ title, description, file });
         const formData=new FormData();
         formData.append("title",title);
         formData.append("description",description);
@@ -21,11 +21,11 @@ const FileForm= (files,setFiles) => {
             headers:{"Content-Type":"multipart/form-data"}
         }
        );
-       setFiles(files.push({
+       setFiles(...files,{
         _id:result.data._id,
         title,
         description,
-       }))
+       })
        alert("added succesfully");
        console.log(result);
       };

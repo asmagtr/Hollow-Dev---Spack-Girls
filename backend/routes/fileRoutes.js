@@ -70,6 +70,71 @@ router.post('/upload', upload.single('file'), verifyFields,async function (req, 
 
   //API TO RETRIVE FILE INFORMATION BY ID
 
+router.get("/get-file-info/:id", async (req, res) => {
+    const id = req.params.id;
+    // we get the file from db 
+    try {
+      const fileInfo = await fileModel.findById(id);
+      
+      if (!fileInfo) {
+        return res.status(404).json({
+          error: true,
+          message: "File not found"
+        });
+      }
+
+      //we get its path in our uploads folder in the server
+  
+      const fileName = fileInfo.file;
+      const filePath = path.join(__dirname, "../uploads/", fileName);
+  
+      // we get file stats
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          console.error('Error getting file stats:', err);
+          return res.status(500).json({
+            error: true,
+            message: 'Error getting file information'
+          });
+        }
+  
+        // we put the infos in fileInfo
+        res.json({
+          error: false,
+          fileInfo: {
+            lastModifiedDate: stats.mtime,
+            name: fileName,
+            size: stats.size,
+            type: getMimeType(fileName) // Function to get MIME type based on file extension
+          }
+        });
+      });
+  
+    } catch (error) {
+      console.error('Error retrieving file information:', error);
+      return res.status(500).json({
+        error: true,
+        message: 'Internal server error'
+      });
+    }
+  });
+  
+  // Helper function to get MIME type based on file extension
+  function getMimeType(fileName) {
+    const ext = path.extname(fileName);
+    switch (ext.toLowerCase()) {
+      case '.pdf':
+        return 'application/pdf';
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
 
 
 
@@ -152,10 +217,8 @@ router.put("/update-file/:id",async (req,res)=>{
 
 
 
-
-
-
   //API TO DELETE FILE 
+  
   router.delete("/delete-file/:id",async(req,res)=>{
     const id=req.params.id;
    try{
