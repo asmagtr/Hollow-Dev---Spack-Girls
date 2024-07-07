@@ -27,12 +27,23 @@ router.post('/', async (req, res) => {
 // Read
 router.get('/', async (req, res) => {
     try {
-      const characters = await Character.find();
-      res.send(characters);
+      const { page = 1, limit = 10 } = req.query;
+      const characters = await Character.find()
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec();
+      const count = await Character.countDocuments();
+  
+      res.json({
+        characters,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page
+      });
     } catch (error) {
       res.status(500).send(error);
     }
   });
+  
 
   router.get('/:id', async (req, res) => {
     try {
