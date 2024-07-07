@@ -19,7 +19,15 @@ route.post("/add-vote",authToken,async (req,res)=>{
    }
 
    const candidateId=req.body.candidateId
+   if(!candidateId){
+    return res.status(400).json({
+        error:true,
+        message:"provide a candidate id",
+    });
+}
 
+
+   try{
    const candidate=await Candidate.findById(candidateId);
    if(!candidate){
     return res.status(404).json({
@@ -51,16 +59,18 @@ route.post("/add-vote",authToken,async (req,res)=>{
 
 });
 
+   }catch(error){
+
+    return res.status(500).json({
+        error:true,
+        message:"server error",
+    });
+
+   }
+
 
 
 
 });
-
-module.exports=route;
-
-
-
-
-
 
 module.exports=route;

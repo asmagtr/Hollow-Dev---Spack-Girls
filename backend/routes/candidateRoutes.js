@@ -32,6 +32,8 @@ route.post("/add-candidate",authToken,async(req,res)=>{
         })
     }
 
+
+    try {
      //first we check if the id is for an existing user
 
      const isUser=await User.findById(futureCandidateId);
@@ -69,6 +71,15 @@ route.post("/add-candidate",authToken,async(req,res)=>{
         message:"candidate added successfully",
         result,
     });
+}catch(error){
+
+    
+    return res.status(500).json({
+        error:false,
+        message:"server error",
+    });
+
+}
 
 })
 

@@ -10,6 +10,7 @@ const jwtUtil = require("../utils/jwt");
 
 
 
+
 const route=express.Router();
 
 
@@ -44,6 +45,8 @@ route.post("/create-account",async(req,res)=>{
 
     }
 
+try{
+
     var isUser=await User.findOne({email:email});
     if (isUser){
         return res
@@ -77,7 +80,7 @@ route.post("/create-account",async(req,res)=>{
        user = new User({
            fullName,
            email,
-           username,
+           username:username,
            password: hashedPassword,
        });
    }
@@ -87,11 +90,8 @@ route.post("/create-account",async(req,res)=>{
 
 
 
-    try{
         const savedUser=await user.save();       
        const accessToken = jwtUtil.generateToken(savedUser._id);
-
-
 
 
     return res.json({
@@ -103,10 +103,12 @@ route.post("/create-account",async(req,res)=>{
 
 
     }catch(error){
+        
         return res.status(500).json({
             error:true,
             message:"server error"
         });
+
 
     }
 
@@ -125,14 +127,21 @@ route.post("/login",async(req,res)=>{
     }
 
 
-    //first we look if the provided body has an email 
+    try{
+           //first we look if the provided body has an email 
    var userInfo =await User.findOne({email:emailOrUsername});
    //if not than we look for an account with that username
    if(!userInfo){
     userInfo =await User.findOne({username:emailOrUsername});
    }
 
-   const isValidPassword = await hash.comparePassword(password, userInfo.password);
+
+   let isValidPassword;
+
+   if(userInfo)
+   {
+     isValidPassword = await hash.comparePassword(password, userInfo.password);
+   }
 
     if(userInfo && !isValidPassword){
         return res.status(400).json({message:"User not found"});
@@ -154,6 +163,15 @@ route.post("/login",async(req,res)=>{
             message:"Invalid Credentials",
         });
     }
+
+    }catch(error){
+          
+        return res.status(500).json({
+            error:true,
+            message:"server error"
+        });
+    }
+ 
 
 });
 

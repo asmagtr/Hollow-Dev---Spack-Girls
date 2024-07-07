@@ -1,12 +1,13 @@
 
-
-
 const { createLogger, transports, format } = require("winston");
 
-const { combine, timestamp, printf, errors } = format;
+const { combine, timestamp, printf, errors ,prettyPrint,json } = format;
 
 const myFormat = printf(({ level, message, timestamp, stack }) => {
-  return `${timestamp} ${level}: ${stack || message}`;
+  if(!stack)
+  return `${timestamp} ${level}: ${message}`;
+
+  return  `${timestamp} ${level}: ${message}  ${stack}`;
 });
 
 const logger = createLogger({
@@ -14,12 +15,13 @@ const logger = createLogger({
   format: combine(
     timestamp(),
     errors({ stack: true }),
-    myFormat
+    myFormat,
+    json(),
+    prettyPrint(),
   ),
   transports: [
-    new transports.File({ filename: 'error.log', level: 'error' }),
     new transports.File({ filename: 'combined.log' }),
   ],
 });
 
-module.exports = logger;
+ module.exports = logger;
