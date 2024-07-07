@@ -4,8 +4,18 @@ const router = express.Router();
 
 router.use(express.json());
 
-// Create
-router.post('/', async (req, res) => {
+const { check, validationResult } = require('express-validator');
+
+// Create after validation
+router.post('/',
+    [check('name').isString().notEmpty()],
+     async (req, res) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         console.log('Received POST request with body:', req.body);  // Log the request body
         if (!req.body || !req.body.name) {
@@ -57,9 +67,16 @@ router.get('/', async (req, res) => {
     }
   });
 
-// Update
-router.put('/:id', async (req, res) => {
+// Update after validation
+router.put('/:id',[
+    check('name').isString().notEmpty()
+  ],async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const character = await Character.findByIdAndUpdate(req.params.id,
         {
         name : req.body.name,
@@ -89,3 +106,5 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
+
