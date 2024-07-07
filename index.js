@@ -26,6 +26,19 @@ app.get('/', (req, res) => {
 // Use character routes
 app.use('/characters', characterRoutes);
 
+//Implement middleware to handle not found and internal server errors
+
+// Middleware for handling 404 Not Found errors
+app.use((req, res, next) => {
+    res.status(404).send('Not Found');
+  });
+  
+// Middleware for handling internal server errors
+app.use((err, req, res, next) => {
+console.error(err.stack);
+res.status(500).send('Internal Server Error');
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
