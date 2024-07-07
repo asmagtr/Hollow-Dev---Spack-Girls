@@ -6,7 +6,9 @@ const authRoute=require("./routes/authRoutes");
 const candidateRoute=require("./routes/candidateRoutes");
 const voteRoute=require("./routes/voteRoutes");
 const connectDB=require("./config/connectDB");
+const winstonLogger=require("./winston/winstonLogger");
 const app=express();
+
 
 
 app.use(express.json());
