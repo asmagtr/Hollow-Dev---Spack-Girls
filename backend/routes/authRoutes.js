@@ -104,6 +104,7 @@ try{
 
     }catch(error){
         
+
         return res.status(500).json({
             error:true,
             message:"server error"
@@ -120,10 +121,12 @@ route.post("/login",async(req,res)=>{
 
     const {emailOrUsername,password}=req.body;
     if(!emailOrUsername){
-        return res.status(400).json({message:"Email is required"});
+        return res.status(400).json({error:true,
+            message:"Email is required"});
     }
     if(!password){
-        return res.status(400).json({message:"Password is required"});
+        return res.status(400).json({error:true,
+            message:"Password is required"});
     }
 
 
@@ -144,7 +147,9 @@ route.post("/login",async(req,res)=>{
    }
 
     if(userInfo && !isValidPassword){
-        return res.status(400).json({message:"User not found"});
+        return res.status(400).json({
+            error:true,
+            message:"User not found"});
     }
 
     if(userInfo && isValidPassword){

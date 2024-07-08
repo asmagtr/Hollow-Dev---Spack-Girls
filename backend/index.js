@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRoute=require("./routes/authRoutes");
 const candidateRoute=require("./routes/candidateRoutes");
 const voteRoute=require("./routes/voteRoutes");
+const userRoute=require("./routes/userRoutes");
 const connectDB=require("./config/connectDB");
 const logger=require("./winston/winstonLogger");
 const app=express();
@@ -13,6 +14,7 @@ const morgan =require('morgan');
 
 const morganFormat = ':method :url :status :response-time ms';
 app.use(express.json());
+app.use(cors())
 
 
 app.use(morgan(morganFormat, {
@@ -37,6 +39,7 @@ app.use(morgan(morganFormat, {
 app.use("/auth",authRoute);
 app.use("/candidate",candidateRoute);
 app.use("/vote",voteRoute);
+app.use("/user",userRoute);
 
 
 
