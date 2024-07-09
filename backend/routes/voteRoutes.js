@@ -73,4 +73,78 @@ route.post("/add-vote",authToken,async (req,res)=>{
 
 });
 
+route.post("/add-vote-by-username",authToken,async (req,res)=>{
+    var user=req.user;
+    if(user.voted){
+    return res.status(403).json({
+         error:true,
+         message:"you have already voted",
+     });
+    }
+ 
+    const candidateUsername=req.body.candidateUsername;
+    if(!candidateUsername){
+     return res.status(400).json({
+         error:true,
+         message:"provide a candidate userName",
+     });
+ }
+ 
+  
+    try{
+     let candidate;
+     candidate=await User.findOne({username:candidateUsername});
+    if(!candidate){
+        return res.status(404).json({
+            error:true,
+            message:"user not found",
+        });
+
+    }
+    candidate=await Candidate.findOne({userId:candidate._id});
+    if(!candidate){
+     return res.status(404).json({
+         error:true,
+         message:`${candidateUsername} is not a candidate`,
+     });
+ 
+    }
+    const userId=user._id;
+    const candidateId=candidate._id
+ 
+    const result=await Vote.create({
+     userId,
+     candidateId,
+    });
+ 
+    candidate.votes=candidate.votes+1;
+    candidate.save();
+    user.voted=true;
+    user=await User.findById(userId);
+    user.voted=true;
+    user.save();
+ 
+    return res.json({
+     error:false,
+     message:"voted successfully",
+     result,
+     user,
+     candidate
+ 
+ });
+ 
+    }catch(error){
+ 
+     return res.status(500).json({
+         error:true,
+         message:"server error",
+     });
+ 
+    }
+ 
+ 
+ 
+ 
+ });
+
 module.exports=route;

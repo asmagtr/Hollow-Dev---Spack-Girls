@@ -33,8 +33,8 @@ const Home = () => {
     setVoteError('');
     // Implement vote functionality here
     try {
-      const result = await axiosInstance.post('/vote/add-vote', {
-        candidateId:voteId,
+      const result = await axiosInstance.post('/vote/add-vote-by-username', {
+        candidateUsername:voteId,
       });
       alert('Vote added successfully');
     } catch (error) {
@@ -57,8 +57,8 @@ const Home = () => {
     setCandidateError('');
     // Implement add candidate functionality here
     try {
-      const result = await axiosInstance.post('/candidate/add-candidate', {
-        candidateId,
+      const result = await axiosInstance.post('/candidate/add-candidate-by-username', {
+        candidateUsername:candidateId,
       });
       alert('Candidate added successfully');
     } catch (error) {
@@ -101,7 +101,7 @@ const Home = () => {
         <h2 className="text-xl font-bold mb-4">Add a Candidate</h2>
         <form onSubmit={handleAddCandidate}>
           <label className="block text-gray-700 mb-2" htmlFor="candidateId">
-            Enter the user ID of the user you want to add as a candidate:
+            Enter the username of the user you want to add as a candidate:
           </label>
           <input
             type="text"
@@ -122,7 +122,7 @@ const Home = () => {
         <h2 className="text-xl font-bold mb-4">Vote for a Candidate</h2>
         <form onSubmit={handleVote}>
           <label className="block text-gray-700 mb-2" htmlFor="voteId">
-            Enter the ID of the candidate you want to vote for:
+            Enter the username of the candidate you want to vote for:
           </label>
           <input
             type="text"

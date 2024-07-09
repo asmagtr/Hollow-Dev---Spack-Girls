@@ -19,7 +19,6 @@ function verifyToken(token){
 
     try{
        const data= jwt.verify(token,process.env.JWT_SECRET);
-       console.log(data)
 
        return data;
 
