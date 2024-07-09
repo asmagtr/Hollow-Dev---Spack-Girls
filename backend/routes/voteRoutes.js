@@ -53,9 +53,6 @@ route.post("/add-vote",authToken,async (req,res)=>{
    return res.json({
     error:false,
     message:"voted successfully",
-    result,
-    user,
-    candidate
 
 });
 
@@ -127,9 +124,6 @@ route.post("/add-vote-by-username",authToken,async (req,res)=>{
     return res.json({
      error:false,
      message:"voted successfully",
-     result,
-     user,
-     candidate
  
  });
  

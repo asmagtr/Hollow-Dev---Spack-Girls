@@ -160,7 +160,6 @@ route.post("/add-candidate-by-username",authToken,async(req,res)=>{
     return res.json({
         error:false,
         message:"candidate added successfully",
-        result,
     });
 }catch(error){
 

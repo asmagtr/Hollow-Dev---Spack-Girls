@@ -96,7 +96,6 @@ try{
 
     return res.json({
         error:false,
-        user:savedUser,
         accessToken,
         message:"Registration Successful"
     });
