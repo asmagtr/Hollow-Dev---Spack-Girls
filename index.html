@@ -1,59 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Document</title>
+    <title>Tic Tac Toe</title>
     <style>
-        .title{
-            text-align: center;
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        .info{
-            text-align: center;
-            font-size: 20px;
-        }
-        .searchButtonCss{
-            margin-top: 10px;
-        }
-        .loading-image{
-            opacity: 0;
-            margin-top: 15px;
-        }
-        .loading-image img{
-            background-color: transparent;
-            height: 100px;
-            background-image: none;
-        }
-        .loading{
-            opacity: 1;
-        }
-
+        .title { text-align: center; font-size: 30px; font-weight: bold; }
+        .info { text-align: center; font-size: 20px; }
+        .searchButtonCss { margin-top: 10px; }
+        .loading-image { opacity: 0; margin-top: 15px; }
+        .loading-image img { background-color: transparent; height: 100px; background-image: none; }
+        .loading { opacity: 1; }
+        #gameTable { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; justify-content: center; }
+        .button { width: 100px; height: 100px; font-size: 24px; }
     </style>
 </head>
 <body>
     <p class="title">TIC TAC TOE</p>
-     <div>
+    <div>
         <p id="users">You <span id="user"></span></p>
         <p id="opponents">Opponent <span id="opponent"></span></p>
-        
-     </div>
-    <p id="play-choice">You play with:<span id="value"></span></p>
-
+    </div>
+    <p id="play-choice">You play with: <span id="value"></span></p>
     <br>
     <p id="turn">X's Turn</p>
-
     <div class="info">
         <p id="enterName">Enter your Name:</p>
         <input type="text" placeholder="Name" id="name" autocomplete="off">
         <div class="searchButtonCss"><button id="searchButton">Search for a player</button></div>
-        <div class="loading-image">
-        <img  src="Loading_icon.gif" alt=""> </div>
+        <div class="loading-image"><img src="Loading_icon.gif" alt=""></div>
     </div>
-
-    
-     
-
     <div id="game">
         <div id="gameTable">
             <button id="button1" class="button"></button>
@@ -66,66 +40,94 @@
             <button id="button8" class="button"></button>
             <button id="button9" class="button"></button>
         </div>
-
+        <p id="winner"></p>
     </div>
-</body>
-<script src="./node_modules/socket.io/client-dist/socket.io.js"></script>
-<script>
-    document.getElementById('users').style.display='none'
-    document.getElementById('opponents').style.display='none'
-    document.getElementById('play-choice').style.display='none'
-    document.getElementById('turn').style.display='none'
-    document.getElementById('game').style.display='none'
-    const socket=io();
-    let name;
-    document.getElementById('searchButton').addEventListener('click',()=>{
-        name=document.getElementById('name').value
+    <script src="./node_modules/socket.io/client-dist/socket.io.js"></script>
+    <script>
+        document.getElementById('users').style.display = 'none';
+        document.getElementById('opponents').style.display = 'none';
+        document.getElementById('play-choice').style.display = 'none';
+        document.getElementById('turn').style.display = 'none';
+        document.getElementById('game').style.display = 'none';
+        const socket = io();
+        let name;
+        let opponent;
+        let playerValue;
+        let isMyTurn = false;
 
-        document.getElementById('user').innerText=name
-        if(!name){
-            alert('enter a name')
-        }
-        else{
-            socket.emit("search",{name})
-            document.querySelector('.loading-image').classList.add('loading')
-        }
-    })
-
-    socket.on('search',(tmp)=>{
-        let allPlayersArray=tmp.allPlayers
-
-        console.log(allPlayersArray)
-        document.getElementById('users').style.display='block'
-        document.getElementById('opponents').style.display='block'
-        document.getElementById('play-choice').style.display='block'
-        document.getElementById('turn').style.display='block'
-        document.getElementById('searchButton').style.display='none'
-        document.getElementById('enterName').style.display='none'
-        document.getElementById('game').style.display='block'
-        document.getElementById('name').style.display='none'
-        document.getElementById('turn').style.display="X's turn"
-
-        document.querySelector('.loading-image').classList.remove('loading')
-
-
-        let oppName
-        let value
-        
-        const foundObj = allPlayersArray.find(obj => obj.firstPlayer.firstPlayerName === name || obj.secondPlayer.secondPlayerName === name);
-
-        if (foundObj) {
-            if (foundObj.firstPlayer.firstPlayerName === name) {
-                oppName = foundObj.secondPlayer.secondPlayerName;
-                value = foundObj.firstPlayer.firstPlayerValue;
+        document.getElementById('searchButton').addEventListener('click', () => {
+            name = document.getElementById('name').value;
+            document.getElementById('user').innerText = name;
+            if (!name) {
+                alert('Enter a name');
             } else {
-                oppName = foundObj.firstPlayer.firstPlayerName;
-                value = foundObj.secondPlayer.secondPlayerValue;
+                socket.emit("search", { name });
+                document.querySelector('.loading-image').classList.add('loading');
             }
+        });
 
-            document.getElementById('opponent').innerText = oppName;
-            document.getElementById('value').innerText = value;
+        socket.on('search', (tmp) => {
+            let allPlayersArray = tmp.allPlayers;
+            document.getElementById('users').style.display = 'block';
+            document.getElementById('opponents').style.display = 'block';
+            document.getElementById('play-choice').style.display = 'block';
+            document.getElementById('turn').style.display = 'block';
+            document.getElementById('searchButton').style.display = 'none';
+            document.getElementById('enterName').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('name').style.display = 'none';
+            document.querySelector('.loading-image').classList.remove('loading');
+
+            const foundObj = allPlayersArray.find(obj => obj.firstPlayer.name === name || obj.secondPlayer.name === name);
+            if (foundObj) {
+                if (foundObj.firstPlayer.name === name) {
+                    opponent = foundObj.secondPlayer.name;
+                    playerValue = foundObj.firstPlayer.value;
+                } else {
+                    opponent = foundObj.firstPlayer.name;
+                    playerValue = foundObj.secondPlayer.value;
+                }
+
+                document.getElementById('opponent').innerText = opponent;
+                document.getElementById('value').innerText = playerValue;
+                isMyTurn = playerValue === 'X';
+                updateTurnDisplay();
+            }
+        });
+
+        function updateTurnDisplay() {
+            document.getElementById('turn').innerText = isMyTurn ? "Your turn" : `${opponent}'s turn`;
         }
 
-    })
-</script>
+        function makeMove(button, index) {
+            if (button.innerText === '' && isMyTurn) {
+                button.innerText = playerValue;
+                socket.emit('makeMove', { playerName: name, opponentName: opponent, index, value: playerValue });
+                isMyTurn = false;
+                updateTurnDisplay();
+            }
+        }
+
+        document.querySelectorAll('.button').forEach((button, index) => {
+            button.addEventListener('click', () => makeMove(button, index));
+        });
+
+        socket.on('moveMade', ({ playerName, opponentName, index, value }) => {
+            const button = document.getElementById(`button${index + 1}`);
+            if (button.innerText === '') {
+                button.innerText = value;
+            }
+            if (playerName !== name) {
+                isMyTurn = true;
+                updateTurnDisplay();
+            }
+        });
+
+        socket.on('gameEnd', ({ winner }) => {
+            let message = winner === 'Draw' ? 'The game is a draw!' : `The winner is ${winner}`;
+            document.getElementById('winner').innerText = message;
+            document.querySelectorAll('.button').forEach(button => button.disabled = true);
+        });
+    </script>
+</body>
 </html>
