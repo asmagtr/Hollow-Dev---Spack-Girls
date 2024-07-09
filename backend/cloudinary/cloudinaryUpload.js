@@ -7,13 +7,13 @@ cloudinary.config({
     api_secret:process.env.API_SECRET
 });
 
-const uploadToCloud=async(image)=>{
-    console.log("the image is"+image);
+const uploadToCloud=async(file)=>{
+ 
     try{
-        const result=await cloudinary.uploader.upload(image)
-        console.log("file is saved in cloudinary , here is the link"+result.url)   ;
+        const result=await cloudinary.uploader.upload(file, {resource_type: "auto"})
+        return result.url;
     }catch(error){
-        console.log(error)
+        return null;
     }
 
 }

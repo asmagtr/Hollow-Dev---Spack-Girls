@@ -47,27 +47,26 @@ router.post('/upload', upload.single('file'), verifyFields,async function (req, 
     const fileName=req.file.filename;
 
     try{
+        const filepath = path.join(__dirname, '../uploads',fileName);
+        const fileCloudinaryURL= await uploadToCloud(filepath);
+
         const result=await fileModel.create({
             title,
             description,
-            file:fileName
+            file:fileName,
+            fileCloudinary:fileCloudinaryURL,
         });
 
         res.json({error:false,
             message:"file uploaded succesfully",
             result,
         });
-        const file=result.file
-        console.log(`result is ${result}////////// file which is result.data is ${file}`)
-        const filepath = path.join(__dirname, '../uploads',file);
-        await uploadToCloud(filepath);
-        console.log("uplooaded")
+        
 
 
 
         
     }catch(error){
-        console.log(error);
         res.status(error).json({
             error:true,
             message:"internal Server Error"
@@ -112,6 +111,8 @@ router.get("/get-file-info/:id", async (req, res) => {
         res.json({
           error: false,
           fileInfo: {
+            title:fileInfo.title,
+            description:fileInfo.description,
             lastModifiedDate: stats.mtime,
             name: fileName,
             size: stats.size,

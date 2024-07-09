@@ -5,30 +5,48 @@ const FileForm= (files,setFiles,filesUpdated,setFilesUpdated) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
+    const [error,setError]=useState(null);
   
   
     const handleSubmit = async(e) => {
         e.preventDefault();
+        setError("");
         // Handle form submission logic
-        console.log("the reqqqqqqqq"+{ title, description, file });
         const formData=new FormData();
         formData.append("title",title);
         formData.append("description",description);
         formData.append("file",file);
     
-    
+try {
+  console.log(formData);
+      
         const result= await axios.post("http://localhost:3000/upload",formData,{
-            headers:{"Content-Type":"multipart/form-data"}
-        }
-       );
-       setFiles(...files,{
-        _id:result.data._id,
-        title,
-        description,
-       });
-       setFilesUpdated(filesUpdated+1);
-       alert("added succesfully");
-       console.log(result);
+          headers:{"Content-Type":"multipart/form-data"}
+      }
+
+      );
+      console.log(result);
+   
+      alert("added succesfully");
+      setFiles(...files,{
+      _id:result.data.result._id,
+      title,
+      description,
+      });
+      setFilesUpdated(filesUpdated+1);
+  
+} catch (error) {
+  if (
+    error.response &&
+    error.response.data &&
+    error.response.data.message
+  ) {
+    setError(error.response.data.message);
+  } else {
+    console.log(error);
+  }
+return; 
+}
       };
     return (
       <form className="max-w-xl mx-auto p-8 bg-white shadow-md rounded" onSubmit={handleSubmit}>
@@ -68,6 +86,7 @@ const FileForm= (files,setFiles,filesUpdated,setFilesUpdated) => {
             className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
           />
         </div>
+        {error && <p className="text-red-500 text-xs py-4">{error}</p>}
   
         <div className="flex items-center justify-between">
           <button
