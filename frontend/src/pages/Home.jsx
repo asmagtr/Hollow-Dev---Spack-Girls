@@ -11,6 +11,26 @@ const Home = () => {
   const [candidateError, setCandidateError] = useState('');
   const navigate = useNavigate();
 
+  const getwinner=async()=>{
+    try {
+      const result=await axiosInstance.get("/candidate/get-winner");
+      console.log(result)
+        alert(`${result.data.username} is winning with ${result.data.votes} votes`)
+      
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ){
+        alert(error.response.data.message);
+        return
+      }
+      alert("error try again later")
+      
+    }
+  }
+
   const getUserInfo = async () => {
     try {
       const result = await axiosInstance.get('/user/me');
@@ -137,6 +157,13 @@ const Home = () => {
             Vote
           </button>
         </form>
+      </div>
+
+
+      <div className="bg-blue-400 p-6 mt-12 rounded-lg shadow-md w-1/2 flex justify-center items-center">
+      <button className="bg-blue-600 text-white py-4  mt-2 px-8 rounded mx-auto" onClick={getwinner}>
+            see winner
+          </button>
       </div>
     </div>
   );

@@ -191,10 +191,26 @@ route.get("/get-candidate-info-by-id/:id",authToken,async(req,res)=>{
             message:"provide an id",
         })
     }
+    try {
+        
+     const result=await getInfo(id);
+     if(!result){
+        
+        return res.status(404).json({
+            error:true,
+            message:"user is not a candidate",
+        })
+     }
+     return res.json(result);
 
+    } catch (error) {
+        return res.status(500).json({
+            error:true,
+            message:"server error"
+        })
+        
+    }
 
-     res=getInfo(id,res);
-     return res;
 
 
     
@@ -210,7 +226,7 @@ route.get("/get-candidate-info-by-username/:username",authToken,async(req,res)=>
         return res.status(403).json({
             error:true,
             message:"only admin have permission to add candidats",
-        })
+        });
     }
 
     const username=req.params.username;
@@ -224,28 +240,67 @@ route.get("/get-candidate-info-by-username/:username",authToken,async(req,res)=>
     let result;
     try {
         result=await User.findOne({username});
+        console.log(result);
         if(!result){
             return res.status(404).json({
                 error:true,
                 message:"no user found",
             });
 
+        };
+        id=result._id;
+        console.log(id+"iddddddddddd");
+    
+        result=await getInfo(id);
+        if(!result){
+            return res.status(401).json({
+                error:true,
+                "message":"user is not a candidate"
+            })
         }
-
-
+        return res.json(result);
         
     } catch (error) {
-        return res.status(500).json("server error");
+        return res.status(500).json({
+            error:true,
+            message:"server error"      
+          });
         
     }
 
-    id=result._id;
-    
-    res=getInfo(id,res);
-    return res;
+
 
 
 }
 )
+
+route.get("/get-winner",authToken,async(req,res)=>{
+    const user=req.user;
+    if(user.role!="admin"){
+
+        return res.status(403).json({
+            error:true,
+            message:"only admin have permission for this opperation",
+        })
+    }
+
+    try {
+        let result =await Candidate.findOne().sort({ votes: -1 }).exec();
+    
+        if (result.length === 0) {
+          throw new Error('No candidates found');
+        }
+    
+        const id=result.userId;
+        result=await getInfo(id);
+        return res.json(result);
+      } catch (error) {
+        return res.status(500).json({
+            error:true,
+            message:"server error"      
+          });
+      }
+
+})
 
 module.exports=route;

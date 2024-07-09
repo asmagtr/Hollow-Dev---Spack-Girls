@@ -2,24 +2,16 @@ const User=require("../models/userModel");
 const Candidate=require("../models/candidateModel");
 
 
-const getCandidateInfoByUserId=async(id,res)=>{
+const getCandidateInfoByUserId=async(id)=>{
 
     try {
         const user=await User.findById(id);
-        if(!user) {return res.status(500).json({
-            error:true,
-            message:"no user found",
-
-        });}
+        if(!user) {return null}
 
         const candidate=await Candidate.findOne({userId:id});
-        if(!candidate) {return res.status(500).json({
-            error:true,
-            message:"user is not a candidate",
+        if(!candidate) {return null}
 
-        });}
-
-        return res.json({
+        return ({
             error:false,
             username:user.username,
             fullNmae:user.fullName,
@@ -34,11 +26,7 @@ const getCandidateInfoByUserId=async(id,res)=>{
 
 
     } catch (error) {
-        return res.status(500).json({
-            error:true,
-            message:"internal server error",
-
-        })
+        throw new Error();
         
         
     }
