@@ -18,7 +18,7 @@
     <div>
         <p id="users">You <span id="user"></span></p>
         <p id="opponents">Opponent <span id="opponent"></span></p>
-    </div>
+    </div>                                                                                
     <p id="play-choice">You play with: <span id="value"></span></p>
     <br>
     <p id="turn">X's Turn</p>
@@ -47,8 +47,8 @@
         document.getElementById('users').style.display = 'none';
         document.getElementById('opponents').style.display = 'none';
         document.getElementById('play-choice').style.display = 'none';
-        document.getElementById('turn').style.display = 'none';
-        document.getElementById('game').style.display = 'none';
+        document.getElementById('turn').style.display = 'none';    
+        document.getElementById('game').style.display = 'none'; 
         const socket = io();
         let name;
         let opponent;
@@ -61,11 +61,20 @@
             if (!name) {
                 alert('Enter a name');
             } else {
-                socket.emit("search", { name });
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name })
+                }).then(response => response.json()).then(() => {
+                    
+                });
                 document.querySelector('.loading-image').classList.add('loading');
             }
         });
 
+        //getting the Search request and adding to the HTML
         socket.on('search', (tmp) => {
             let allPlayersArray = tmp.allPlayers;
             document.getElementById('users').style.display = 'block';
@@ -102,16 +111,23 @@
         function makeMove(button, index) {
             if (button.innerText === '' && isMyTurn) {
                 button.innerText = playerValue;
-                socket.emit('makeMove', { playerName: name, opponentName: opponent, index, value: playerValue });
-                isMyTurn = false;
-                updateTurnDisplay();
+                fetch('/makeMove', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ playerName: name, opponentName: opponent, index, value: playerValue })
+                }).then(response => response.json()).then(() => {
+                    isMyTurn = false;
+                    updateTurnDisplay();
+                });
             }
         }
 
         document.querySelectorAll('.button').forEach((button, index) => {
             button.addEventListener('click', () => makeMove(button, index));
         });
-
+        //getting the moveMade request and making changes with gameRules 
         socket.on('moveMade', ({ playerName, opponentName, index, value }) => {
             const button = document.getElementById(`button${index + 1}`);
             if (button.innerText === '') {
@@ -123,6 +139,7 @@
             }
         });
 
+        //getting the gameEnd request
         socket.on('gameEnd', ({ winner }) => {
             let message = winner === 'Draw' ? 'The game is a draw!' : `The winner is ${winner}`;
             document.getElementById('winner').innerText = message;
