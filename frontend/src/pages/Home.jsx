@@ -14,7 +14,6 @@ const Home = () => {
   const getwinner=async()=>{
     try {
       const result=await axiosInstance.get("/candidate/get-winner");
-      console.log(result)
         alert(`${result.data.username} is winning with ${result.data.votes} votes`)
       
     } catch (error) {

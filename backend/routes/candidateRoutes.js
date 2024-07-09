@@ -240,7 +240,6 @@ route.get("/get-candidate-info-by-username/:username",authToken,async(req,res)=>
     let result;
     try {
         result=await User.findOne({username});
-        console.log(result);
         if(!result){
             return res.status(404).json({
                 error:true,
@@ -249,7 +248,6 @@ route.get("/get-candidate-info-by-username/:username",authToken,async(req,res)=>
 
         };
         id=result._id;
-        console.log(id+"iddddddddddd");
     
         result=await getInfo(id);
         if(!result){
