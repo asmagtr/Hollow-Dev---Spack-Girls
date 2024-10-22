@@ -1,0 +1,16 @@
+
+const validateFields = (req, res, next) => {
+  if (!req.body.title) {
+    return res.status(400).json({ error: true,
+        message:'Title is required' ,
+    });
+  }
+  if (!req.file) {
+    return res.status(400).json({ error: true,
+        message:'File is required' ,
+    });
+  }
+  next();
+};
+
+module.exports = validateFields;
